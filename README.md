@@ -1,2 +1,2 @@
-# sass-multi-webpack-loader
+# sass-multi-version-loader
 Compiles sass to css  using non-node-sass  and support webpack 2.x
