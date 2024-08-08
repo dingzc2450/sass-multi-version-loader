@@ -1,0 +1,35 @@
+{
+  "version": "0.2",
+  "language": "en,en-gb",
+  "words": [
+    "darkcyan",
+    "libsass",
+    "drilldown",
+    "callout",
+    "mediumpurple",
+    "hotpink",
+    "rosybrown",
+    "asdfj",
+    "unparseable",
+    "memfs",
+    "klona",
+    "sharename",
+    "wekbit",
+    "commitlint",
+    "bgcolor",
+    "autocrlf"
+  ],
+
+  "ignorePaths": [
+    "CHANGELOG.md",
+    "coverage",
+    "package.json",
+    "dist/**",
+    "**/__snapshots__/**",
+    "package-lock.json",
+    "*.sass",
+    "node_modules",
+    "coverage",
+    "*.log"
+  ]
+}
