@@ -81,7 +81,7 @@ function sassLoader(content) {
     // Skip empty files, otherwise it will stop webpack, see issue #21
     if (options.data.trim() === "") {
         callback(null, "");
-
+        return;
     }
 
     // start the actual rendering
