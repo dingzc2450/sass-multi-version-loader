@@ -3,7 +3,6 @@
   "version": "0.0.1",
   "description": "Sass loader for webpack",
   "license": "MIT",
-  "repository": "webpack-contrib/sass-loader",
   "author": "Dz",
   "homepage": "https://github.com/dingzc2450/sass-multi-version-loader",
   "bugs": "https://github.com/dingzc2450/sass-multi-version-loader/issues",
