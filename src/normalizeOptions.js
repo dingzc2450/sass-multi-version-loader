@@ -22,7 +22,7 @@ const proxyCustomImporters = require("./proxyCustomImporters");
  */
 function normalizeOptions(loaderContext, content, webpackImporter) {
     const options = cloneDeep(utils.getOptions(loaderContext)) || {};
-    const {resourcePath} = loaderContext;
+    const { resourcePath } = loaderContext;
 
     options.data = options.data ? (options.data + os.EOL + content) : content;
 
@@ -66,6 +66,7 @@ function normalizeOptions(loaderContext, content, webpackImporter) {
     } else {
         options.indentedSyntax = Boolean(options.indentedSyntax);
     }
+    // options.syntax = options.indentedSyntax ? 'indented' : 'scss';
 
     // Allow passing custom importers to `node-sass`. Accepts `Function` or an array of `Function`s.
     options.importer = options.importer ? proxyCustomImporters(options.importer, resourcePath) : [];
@@ -74,7 +75,7 @@ function normalizeOptions(loaderContext, content, webpackImporter) {
     // `node-sass` uses `includePaths` to resolve `@import` paths. Append the currently processed file.
     options.includePaths = options.includePaths || [];
     options.includePaths.push(path.dirname(resourcePath));
-
+    options.ignoreKeywords = options.ignoreKeywords || [];
     return options;
 }
 

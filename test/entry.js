@@ -1,0 +1,3 @@
+
+
+require('./simply.scss');
