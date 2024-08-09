@@ -1,3 +1,4 @@
+require('should');
 const path = require("path");
 const fs = require("fs");
 
@@ -92,27 +93,27 @@ describe("source maps", () => {
     }
 
     it("should compile without errors", () => buildWithSourceMaps());
-    // it("should produce a valid source map", () => {
-    //     const cwdGetter = process.cwd;
-    //     const fakeCwd = path.join(__dirname, "scss");
+    it("should produce a valid source map", () => {
+        const cwdGetter = process.cwd;
+        const fakeCwd = path.join(__dirname, "scss");
 
-    //     process.cwd = function () {
-    //         return fakeCwd;
-    //     };
+        process.cwd = function () {
+            return fakeCwd;
+        };
 
-    //     return buildWithSourceMaps()
-    //         .then(() => {
-    //             const {sourceMap} = testLoader;
+        return buildWithSourceMaps()
+            .then(() => {
+                const {sourceMap} = testLoader;
 
-    //             sourceMap.should.not.have.property("file");
-    //             sourceMap.should.have.property("sourceRoot", fakeCwd);
-    //             // This number needs to be updated if imports.scss or any dependency of that changes
-    //             sourceMap.sources.should.have.length(8);
-    //             sourceMap.sources.forEach(sourcePath =>
-    //                 fs.existsSync(path.resolve(sourceMap.sourceRoot, sourcePath))
-    //             );
+                sourceMap.should.not.have.property("file");
+                sourceMap.should.have.property("sourceRoot", fakeCwd);
+                // This number needs to be updated if imports.scss or any dependency of that changes
+                sourceMap.sources.should.have.length(8);
+                sourceMap.sources.forEach(sourcePath =>
+                    fs.existsSync(path.resolve(sourceMap.sourceRoot, sourcePath))
+                );
 
-    //             process.cwd = cwdGetter;
-    //         });
-    // });
+                process.cwd = cwdGetter;
+            });
+    });
 });

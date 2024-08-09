@@ -34,6 +34,7 @@ specifiers:
   prettier: ^3.2.2
   sass: ^1.77.8
   semver: ^7.5.4
+  should: ^13.2.3
   standard-version: ^9.3.1
   webpack: ^2.2.1
 
@@ -73,6 +74,7 @@ devDependencies:
   prettier: 3.3.3
   sass: 1.77.8
   semver: 7.6.3
+  should: 13.2.3
   standard-version: 9.5.0
   webpack: 2.7.0
 
@@ -8492,6 +8494,44 @@ packages:
 
   /shell-quote/1.8.1:
     resolution: {integrity: sha512-6j1W9l1iAs/4xYBI1SYOVZyFcCis9b4KCLQ8fgAGG07QvzaRLVVRQvAy85yNmmZSjYjg4MWh4gNvlPujU/5LpA==}
+    dev: true
+
+  /should-equal/2.0.0:
+    resolution: {integrity: sha512-ZP36TMrK9euEuWQYBig9W55WPC7uo37qzAEmbjHz4gfyuXrEUgF8cUvQVO+w+d3OMfPvSRQJ22lSm8MQJ43LTA==}
+    dependencies:
+      should-type: 1.4.0
+    dev: true
+
+  /should-format/3.0.3:
+    resolution: {integrity: sha512-hZ58adtulAk0gKtua7QxevgUaXTTXxIi8t41L3zo9AHvjXO1/7sdLECuHeIN2SRtYXpNkmhoUP2pdeWgricQ+Q==}
+    dependencies:
+      should-type: 1.4.0
+      should-type-adaptors: 1.1.0
+    dev: true
+
+  /should-type-adaptors/1.1.0:
+    resolution: {integrity: sha512-JA4hdoLnN+kebEp2Vs8eBe9g7uy0zbRo+RMcU0EsNy+R+k049Ki+N5tT5Jagst2g7EAja+euFuoXFCa8vIklfA==}
+    dependencies:
+      should-type: 1.4.0
+      should-util: 1.0.1
+    dev: true
+
+  /should-type/1.4.0:
+    resolution: {integrity: sha512-MdAsTu3n25yDbIe1NeN69G4n6mUnJGtSJHygX3+oN0ZbO3DTiATnf7XnYJdGT42JCXurTb1JI0qOBR65shvhPQ==}
+    dev: true
+
+  /should-util/1.0.1:
+    resolution: {integrity: sha512-oXF8tfxx5cDk8r2kYqlkUJzZpDBqVY/II2WhvU0n9Y3XYvAYRmeaf1PvvIvTgPnv4KJ+ES5M0PyDq5Jp+Ygy2g==}
+    dev: true
+
+  /should/13.2.3:
+    resolution: {integrity: sha512-ggLesLtu2xp+ZxI+ysJTmNjh2U0TsC+rQ/pfED9bUZZ4DKefP27D+7YJVVTvKsmjLpIi9jAa7itwDGkDDmt1GQ==}
+    dependencies:
+      should-equal: 2.0.0
+      should-format: 3.0.3
+      should-type: 1.4.0
+      should-type-adaptors: 1.1.0
+      should-util: 1.0.1
     dev: true
 
   /side-channel/1.0.6:
