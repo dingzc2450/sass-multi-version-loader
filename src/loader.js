@@ -6,7 +6,7 @@ import sass from 'sass';
 import async from 'async';
 import pify from 'pify';
 
-import formatSassError from './formatSassError';
+import SassError from './SassError';
 import webpackImporter from './webpackImporter';
 import normalizeOptions from './normalizeOptions';
 import { temReplaceKeywordsInString } from './utils';
@@ -66,15 +66,16 @@ function sassLoader(content) {
     }
 
     // start the actual rendering
-    asyncSassJobQueue.push(options, (err, result) => {
-        if (err) {
-            formatSassError(err, this.resourcePath);
-            if (err.file) {
-                this.dependency(err.file);
+    asyncSassJobQueue.push(options, (error, result) => {
+        if (error) {
+            if (error.file) {
+              addNormalizedDependency(error.file);
             }
-            callback(err);
+      
+            callback(new SassError(error, this.resourcePath));
+      
             return;
-        }
+          }
 
         if (result.map && result.map !== "{}") {
             result.map = JSON.parse(result.map);
