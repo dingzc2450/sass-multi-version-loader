@@ -22,7 +22,7 @@ const asyncSassJobQueue = async.queue((task, callback) => {
                 callback(err);
                 return;
             }
-            
+
             const css = result.css.toString();
             callback(null, { ...result, css: replace(css) });
         })
@@ -85,7 +85,17 @@ function sassLoader(content) {
             // Now let's override that value with the correct relative path.
             // Since we specified options.sourceMap = path.join(process.cwd(), "/sass.map"); in normalizeOptions,
             // we know that this path is relative to process.cwd(). This is how node-sass works.
-            result.map.sources[0] = path.relative(process.cwd(), resourcePath);
+            const stdinIndex = result.map.sources.findIndex(
+                (source) => source.indexOf('stdin') !== -1
+            );
+
+            if (stdinIndex !== -1) {
+                // eslint-disable-next-line no-param-reassign
+                result.map.sources[stdinIndex] = path.relative(
+                    process.cwd(),
+                    this.resourcePath
+                );
+            }
             // node-sass returns POSIX paths, that's why we need to transform them back to native paths.
             // This fixes an error on windows where the source-map module cannot resolve the source maps.
             // @see https://github.com/webpack-contrib/sass-loader/issues/366#issuecomment-279460722
