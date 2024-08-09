@@ -8,7 +8,7 @@
   "bugs": "https://github.com/dingzc2450/sass-multi-version-loader/issues",
   "main": "dist/loader.js",
   "engines": {
-    "node": ">= 16"
+    "node": ">= 16 || >= 14 || >= 12"
   },
   "scripts": {
     "start": "npm run build -- -w",
