@@ -50,10 +50,9 @@
   },
   "dependencies": {
     "async": "^3.2.5",
-    "pify": "^2.3.0",
     "clone-deep": "^0.2.4",
     "loader-utils": "^1.0.1",
-    "lodash.tail": "^4.1.1"
+    "pify": "^2.3.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.23.4",
@@ -71,7 +70,6 @@
     "cspell": "^8.6.0",
     "del": "^6.1.1",
     "del-cli": "^5.1.0",
-    "enhanced-resolve": "^5.15.1",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.28.0",

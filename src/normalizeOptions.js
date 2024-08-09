@@ -14,10 +14,9 @@ import proxyCustomImporters from './proxyCustomImporters';
  *
  * @param {LoaderContext} loaderContext
  * @param {string} content
- * @param {Function} webpackImporter
  * @returns {Object}
  */
-function normalizeOptions(loaderContext, content, webpackImporter) {
+function normalizeOptions(loaderContext, content) {
     const options = cloneDeep(utils.getOptions(loaderContext)) || {};
     const { resourcePath } = loaderContext;
 
@@ -67,7 +66,6 @@ function normalizeOptions(loaderContext, content, webpackImporter) {
 
     // Allow passing custom importers to `node-sass`. Accepts `Function` or an array of `Function`s.
     options.importer = options.importer ? proxyCustomImporters(options.importer, resourcePath) : [];
-    options.importer.push(webpackImporter);
 
     // `node-sass` uses `includePaths` to resolve `@import` paths. Append the currently processed file.
     options.includePaths = options.includePaths || [];

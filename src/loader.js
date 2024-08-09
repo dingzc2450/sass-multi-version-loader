@@ -40,7 +40,6 @@ function sassLoader(content) {
     const callback = this.async();
     const isSync = typeof callback !== "function";
     const self = this;
-    const { resourcePath } = this;
 
     function addNormalizedDependency(file) {
         // node-sass returns POSIX paths
@@ -53,11 +52,12 @@ function sassLoader(content) {
 
     this.cacheable();
 
-    const options = normalizeOptions(this, content, webpackImporter(
-        resourcePath,
-        pify(this.resolve.bind(this)),
-        addNormalizedDependency
-    ));
+    const options = normalizeOptions(this, content);
+    const resolve = pify(this.resolve.bind(this));
+
+    options.importer.push(
+        webpackImporter(this.resourcePath, resolve, addNormalizedDependency)
+    );
 
     // Skip empty files, otherwise it will stop webpack, see issue #21
     if (options.data.trim() === "") {
@@ -96,6 +96,7 @@ function sassLoader(content) {
                     this.resourcePath
                 );
             }
+
             // node-sass returns POSIX paths, that's why we need to transform them back to native paths.
             // This fixes an error on windows where the source-map module cannot resolve the source maps.
             // @see https://github.com/webpack-contrib/sass-loader/issues/366#issuecomment-279460722
