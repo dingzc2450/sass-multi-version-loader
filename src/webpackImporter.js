@@ -21,9 +21,9 @@ import path from 'node:path';
 import tail from 'lodash.tail';
 import utils from 'loader-utils';
 
+import importsToResolve from './importsToResolve';
 
 
-const importsToResolve = require("./importsToResolve");
 
 const matchCss = /\.css$/;
 

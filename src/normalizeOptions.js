@@ -1,13 +1,10 @@
+import os from 'os';
+import path from 'path';
 
+import utils from 'loader-utils';
+import cloneDeep from 'clone-deep';
 
-const os = require("os");
-
-const path = require("path");
-
-const utils = require("loader-utils");
-const cloneDeep = require("clone-deep");
-
-const proxyCustomImporters = require("./proxyCustomImporters");
+import proxyCustomImporters from './proxyCustomImporters';
 
 /**
  * Derives the sass options from the loader context and normalizes its values with sane defaults.

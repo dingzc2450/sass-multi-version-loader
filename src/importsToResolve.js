@@ -1,6 +1,6 @@
 
 
-import path from 'node:path';
+import path from 'path';
 
 // libsass uses this precedence when importing files without extension
 const extPrecedence = [".scss", ".sass", ".css"];

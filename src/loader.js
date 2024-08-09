@@ -1,51 +1,32 @@
 
-import path from 'node:path';
+import path from 'path';
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 import sass from 'sass';
 import async from 'async';
 import pify from 'pify';
 
-
-const formatSassError = require("./formatSassError");
-const webpackImporter = require("./webpackImporter");
-const normalizeOptions = require("./normalizeOptions");
-
+import formatSassError from './formatSassError';
+import webpackImporter from './webpackImporter';
+import normalizeOptions from './normalizeOptions';
+import { temReplaceKeywordsInString } from './utils';
 // This queue makes sure node-sass leaves one thread available for executing
 // fs tasks when running the custom importer code.
 // This can be removed as soon as node-sass implements a fix for this.
 const threadPoolSize = process.env.UV_THREADPOOL_SIZE || 4;
 const asyncSassJobQueue = async.queue((task, callback) => {
     const { data, ignoreKeywords, ...rest } = task;
-    let processData = data;
-    const replaceKeywords = ignoreKeywords.map((_, i) => `::key-word-${i}`);
-    let isReplaceDirty = false;
-    if (ignoreKeywords.length > 0) {
-        // record the replace status
-        processData = ignoreKeywords.reduce((acc, keyword, i) => acc.replace(new RegExp(keyword, 'g'), (v) => {
-            isReplaceDirty = true;
-            return `::key-word-${i}`;
-        }), data)
-    }
-    sass.render({ ...rest, data: processData }, (err, result) => {
-        if (err) {
-            callback(err);
-            return;
-        }
-
-        const css = result.css.toString();
-        result.css = css;
-        if (isReplaceDirty) {
-            // replace the key-word back to the original keyword
-            result.css = replaceKeywords.reduce((acc, keyword, i) => acc.replace(new RegExp(keyword, 'g'), ignoreKeywords[i]), css);
-        }
-        callback(null, result);
+    temReplaceKeywordsInString(ignoreKeywords, data, (content, replace) => {
+        sass.render({ ...rest, data: content }, (err, result) => {
+            if (err) {
+                callback(err);
+                return;
+            }
+            
+            const css = result.css.toString();
+            callback(null, { ...result, css: replace(css) });
+        })
     })
-    // sass.compileStringAsync(processData,{
-    //     importer:{
-
-    //     }
-    // })
 
 }, threadPoolSize - 1);
 
