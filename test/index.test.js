@@ -57,3 +57,31 @@ it("should compile a vue2.x scss deep", async () => {
     }
     return Promise.reject()
 });
+
+it("should compile sourceMap", async () => {
+    try {
+        await runWebpack({
+            entry: path.join(__dirname, "entry2.js"),
+            module: {
+                rules: [
+                    {
+                        test: /\.scss$/,
+                        use: [
+                            {
+                                loader: path.resolve(__dirname, "../dist/loader.js"),
+                                options: {
+                                    ignoreKeywords: ["/deep/"],
+                                    sourceMap: true
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        })
+    } catch (error) {
+        expect(error.message).toMatch(/\/deep\//);
+        return Promise.resolve()
+    }
+    return Promise.reject()
+});

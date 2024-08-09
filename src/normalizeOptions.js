@@ -1,13 +1,15 @@
 
 
-const os = require("os");
+import path from 'path';
+import os from 'os';
 
-const path = require("path");
+import utils from 'loader-utils';
+import cloneDeep from 'clone-deep';
 
-const utils = require("loader-utils");
-const cloneDeep = require("clone-deep");
-
-const proxyCustomImporters = require("./proxyCustomImporters");
+import proxyCustomImporters from './proxyCustomImporters';
+import {
+    getModernWebpackImporter
+  } from "./utils";
 
 /**
  * Derives the sass options from the loader context and normalizes its values with sane defaults.
@@ -69,9 +71,13 @@ function normalizeOptions(loaderContext, content, webpackImporter) {
     // options.syntax = options.indentedSyntax ? 'indented' : 'scss';
 
     // Allow passing custom importers to `node-sass`. Accepts `Function` or an array of `Function`s.
-    options.importer = options.importer ? proxyCustomImporters(options.importer, resourcePath) : [];
-    options.importer.push(webpackImporter);
-
+    // options.importer = options.importer ? proxyCustomImporters(options.importer, resourcePath) : [];
+    // options.importer.push(webpackImporter);
+    options.importers = options.importers
+    ? Array.isArray(options.importers)
+      ? options.importers.slice()
+      : [options.importers]
+    : [];
     // `node-sass` uses `includePaths` to resolve `@import` paths. Append the currently processed file.
     options.includePaths = options.includePaths || [];
     options.includePaths.push(path.dirname(resourcePath));

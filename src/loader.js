@@ -1,11 +1,15 @@
 
-import path from 'node:path';
+import path from 'path';
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 import sass from 'sass';
 import async from 'async';
 import pify from 'pify';
 
+import {
+    getModernWebpackImporter,
+    normalizeSourceMap,
+} from "./utils";
 
 const formatSassError = require("./formatSassError");
 const webpackImporter = require("./webpackImporter");
@@ -24,33 +28,37 @@ const asyncSassJobQueue = async.queue((task, callback) => {
         // record the replace status
         processData = ignoreKeywords.reduce((acc, keyword, i) => acc.replace(new RegExp(keyword, 'g'), (v) => {
             isReplaceDirty = true;
-            return `::key-word-${i}`;
+            return replaceKeywords[i];
         }), data)
     }
-    sass.render({ ...rest, data: processData }, (err, result) => {
-        if (err) {
-            callback(err);
-            return;
-        }
-
-        const css = result.css.toString();
-        result.css = css;
+    sass.compileAsync(processData, rest).then(res => {
         if (isReplaceDirty) {
             // replace the key-word back to the original keyword
-            result.css = replaceKeywords.reduce((acc, keyword, i) => acc.replace(new RegExp(keyword, 'g'), ignoreKeywords[i]), css);
+            res.css = replaceKeywords.reduce((acc, keyword, i) => acc.replace(new RegExp(keyword, 'g'), ignoreKeywords[i]), res.css);
         }
-        callback(null, result);
+        // res.sourceMap
+        // res.sourceMap
+        callback(null, res);
     })
-    // sass.compileStringAsync(processData,{
-    //     importer:{
-
+    // sass.render({ ...rest, data: processData }, (err, result) => {
+    //     if (err) {
+    //         callback(err);
+    //         return;
     //     }
+    //     const css = result.css.toString();
+    //     result.css = css;
+    //     if (isReplaceDirty) {
+    //         // replace the key-word back to the original keyword
+    //         result.css = replaceKeywords.reduce((acc, keyword, i) => acc.replace(new RegExp(keyword, 'g'), ignoreKeywords[i]), css);
+    //     }
+    //     callback(null, result);
     // })
+
 
 }, threadPoolSize - 1);
 
 /**
- * The sass-loader makes node-sass available to webpack modules.
+ * The sass-loader makes sass available to webpack modules.
  *
  * @this {LoaderContext}
  * @param {string} content
@@ -78,12 +86,18 @@ function sassLoader(content) {
         addNormalizedDependency
     ));
 
+    options.importers.push(
+        // No need to pass `loadPaths`, because modern API handle them itself
+        getModernWebpackImporter(this, sass, []),
+      );
+
     // Skip empty files, otherwise it will stop webpack, see issue #21
     if (options.data.trim() === "") {
         callback(null, "");
         return;
     }
-
+    const useSourceMap =
+        typeof options.sourceMap === "boolean" ? options.sourceMap : this.sourceMap;
     // start the actual rendering
     asyncSassJobQueue.push(options, (err, result) => {
         if (err) {
@@ -94,25 +108,28 @@ function sassLoader(content) {
             callback(err);
             return;
         }
-
-        if (result.map && result.map !== "{}") {
-            result.map = JSON.parse(result.map);
-            // result.map.file is an optional property that provides the output filename.
-            // Since we don't know the final filename in the webpack build chain yet, it makes no sense to have it.
-            delete result.map.file;
-            // The first source is 'stdin' according to node-sass because we've used the data input.
-            // Now let's override that value with the correct relative path.
-            // Since we specified options.sourceMap = path.join(process.cwd(), "/sass.map"); in normalizeOptions,
-            // we know that this path is relative to process.cwd(). This is how node-sass works.
-            result.map.sources[0] = path.relative(process.cwd(), resourcePath);
-            // node-sass returns POSIX paths, that's why we need to transform them back to native paths.
-            // This fixes an error on windows where the source-map module cannot resolve the source maps.
-            // @see https://github.com/webpack-contrib/sass-loader/issues/366#issuecomment-279460722
-            result.map.sourceRoot = path.normalize(result.map.sourceRoot);
-            result.map.sources = result.map.sources.map(path.normalize);
-        } else {
-            result.map = null;
+        let map = result.sourceMap;
+        if (map && useSourceMap) {
+            map = normalizeSourceMap(map, this.rootContext);
         }
+        // if (result.map && result.map !== "{}") {
+        //     result.map = JSON.parse(result.map);
+        //     // result.map.file is an optional property that provides the output filename.
+        //     // Since we don't know the final filename in the webpack build chain yet, it makes no sense to have it.
+        //     delete result.map.file;
+        //     // The first source is 'stdin' according to node-sass because we've used the data input.
+        //     // Now let's override that value with the correct relative path.
+        //     // Since we specified options.sourceMap = path.join(process.cwd(), "/sass.map"); in normalizeOptions,
+        //     // we know that this path is relative to process.cwd(). This is how node-sass works.
+        //     result.map.sources[0] = path.relative(process.cwd(), resourcePath);
+        //     // node-sass returns POSIX paths, that's why we need to transform them back to native paths.
+        //     // This fixes an error on windows where the source-map module cannot resolve the source maps.
+        //     // @see https://github.com/webpack-contrib/sass-loader/issues/366#issuecomment-279460722
+        //     result.map.sourceRoot = path.normalize(result.map.sourceRoot);
+        //     result.map.sources = result.map.sources.map(path.normalize);
+        // } else {
+        //     result.map = null;
+        // }
 
         result.stats.includedFiles.forEach(addNormalizedDependency);
         callback(null, result.css, result.map);
